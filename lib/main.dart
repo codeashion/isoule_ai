@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'theme.dart';
+import 'package:isoule_ai/features/splash/presentation/screens/splash_screen.dart';
+import 'core/theme/app_theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
       title: 'isoule_ai',
       debugShowCheckedModeBanner: false,
       theme: appTheme,
-      home: Scaffold(body: Center(child: Text('sndjsndj'))),
+      home: SplashScreen(),
     );
   }
 }
