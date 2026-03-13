@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pinput/pinput.dart';
 import 'package:isoule_ai/core/constants/app_colors.dart';
+import 'package:isoule_ai/features/dashboard/presentation/blocs/dashboard_bloc.dart';
+import 'package:isoule_ai/features/dashboard/presentation/blocs/dashboard_event.dart';
+import 'package:isoule_ai/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:isoule_ai/features/otp/presentation/blocs/otp_bloc.dart';
 import 'package:isoule_ai/features/otp/presentation/blocs/otp_event.dart';
 import 'package:isoule_ai/features/otp/presentation/blocs/otp_state.dart';
@@ -58,6 +61,16 @@ class _OtpScreenState extends State<OtpScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('OTP Verified (demo)')),
                   );
+
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BlocProvider(
+                        create: (_) => DashboardBloc()..add(LoadDashboard()),
+                        child: const DashboardScreen(),
+                      ),
+                    ),
+                  );
                 }
               },
               builder: (context, state) {
@@ -90,6 +103,8 @@ class _OtpScreenState extends State<OtpScreen> {
                     Center(
                       child: Pinput(
                         length: 4,
+                        obscureText: true,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         controller: _pinController,
                         defaultPinTheme: PinTheme(
                           width: 60,

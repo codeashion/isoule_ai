@@ -10,7 +10,7 @@ class SplashScreen extends StatefulWidget {
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
-  
+
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
@@ -20,6 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void _navigateNext() async {
     await Future.delayed(const Duration(seconds: 3));
+    if (!mounted) return;
 
     Navigator.pushReplacement(
       context,
@@ -92,4 +93,3 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
-
