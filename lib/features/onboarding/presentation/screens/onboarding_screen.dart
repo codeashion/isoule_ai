@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:isoule_ai/core/constants/app_colors.dart';
 import 'package:isoule_ai/core/constants/onboarding_data.dart';
+import 'package:isoule_ai/features/login/presentation/screens/login_screen.dart';
 import 'package:isoule_ai/features/onboarding/presentation/blocs/onboarding_bloc.dart';
 import 'package:isoule_ai/features/onboarding/presentation/blocs/onboarding_event.dart';
 import 'package:isoule_ai/features/onboarding/presentation/blocs/onboarding_state.dart';
@@ -78,9 +79,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   void _nextPage(int currentPage) {
     if (currentPage == onboardingList.length - 1) {
-      /// TODO: Navigate to Login / Enable Security
-      /// Example:
-      /// Navigator.pushReplacementNamed(context, '/login');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
     } else {
       _controller.nextPage(
         duration: const Duration(milliseconds: 300),
