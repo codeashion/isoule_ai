@@ -103,7 +103,6 @@ class _OtpScreenState extends State<OtpScreen> {
                     Center(
                       child: Pinput(
                         length: 4,
-                        obscureText: true,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         controller: _pinController,
                         defaultPinTheme: PinTheme(

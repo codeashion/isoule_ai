@@ -8,6 +8,7 @@ class SignupState extends Equatable {
   final String phone;
   final String countryCode;
   final String countryFlagUri;
+  final String? profileImagePath;
   final bool isSubmitting;
   final bool isSuccess;
   final String? errorMessage;
@@ -20,6 +21,7 @@ class SignupState extends Equatable {
     this.phone = '',
     this.countryCode = '+1',
     this.countryFlagUri = 'flags/us.png',
+    this.profileImagePath,
     this.isSubmitting = false,
     this.isSuccess = false,
     this.errorMessage,
@@ -55,6 +57,7 @@ class SignupState extends Equatable {
     String? phone,
     String? countryCode,
     String? countryFlagUri,
+    String? profileImagePath,
     bool? isSubmitting,
     bool? isSuccess,
     String? errorMessage,
@@ -67,6 +70,7 @@ class SignupState extends Equatable {
       phone: phone ?? this.phone,
       countryCode: countryCode ?? this.countryCode,
       countryFlagUri: countryFlagUri ?? this.countryFlagUri,
+      profileImagePath: profileImagePath ?? this.profileImagePath,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       isSuccess: isSuccess ?? this.isSuccess,
       errorMessage: errorMessage,
@@ -82,6 +86,7 @@ class SignupState extends Equatable {
     phone,
     countryCode,
     countryFlagUri,
+    profileImagePath,
     isSubmitting,
     isSuccess,
     errorMessage,

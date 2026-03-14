@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:isoule_ai/core/constants/app_colors.dart';
 import 'package:isoule_ai/features/signup/presentation/blocs/signup_bloc.dart';
 import 'package:isoule_ai/features/signup/presentation/blocs/signup_event.dart';
 import 'package:isoule_ai/features/signup/presentation/blocs/signup_state.dart';
@@ -19,7 +18,6 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _dobController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
-  File? _pickedImage;
 
   @override
   void dispose() {
@@ -42,7 +40,7 @@ class _SignupScreenState extends State<SignupScreen> {
     }
   }
 
-  Future<void> _pickImage() async {
+  Future<void> _pickImage(BuildContext context) async {
     final result = await _picker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 70,
@@ -50,108 +48,109 @@ class _SignupScreenState extends State<SignupScreen> {
     );
 
     if (result != null) {
-      setState(() {
-        _pickedImage = File(result.path);
-      });
+      context.read<SignupBloc>().add(ProfileImageChanged(result.path));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return BlocProvider(
       create: (_) => SignupBloc(),
       child: Scaffold(
-        backgroundColor: kBackground,
+        backgroundColor: theme.scaffoldBackgroundColor,
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 36),
-
-                Text(
-                  'Profile setup',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                Text(
-                  'Help us get to know you better by setting up your profile details.',
-                  style: Theme.of(
+            child: BlocConsumer<SignupBloc, SignupState>(
+              listener: (context, state) {
+                if (state.errorMessage != null) {
+                  ScaffoldMessenger.of(
                     context,
-                  ).textTheme.bodyMedium?.copyWith(color: kGraySubTitle),
-                ),
+                  ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
+                }
 
-                const SizedBox(height: 32),
-
-                Center(
-                  child: GestureDetector(
-                    onTap: _pickImage,
-                    child: Stack(
-                      alignment: Alignment.bottomRight,
-                      children: [
-                        CircleAvatar(
-                          radius: 44,
-                          backgroundColor: kComponentBackground,
-                          backgroundImage: _pickedImage != null
-                              ? FileImage(_pickedImage!)
-                              : null,
-                          child: _pickedImage == null
-                              ? Icon(
-                                  Icons.person,
-                                  size: 44,
-                                  color: kGraySubTitle,
-                                )
-                              : null,
-                        ),
-                        Container(
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            color: kButtonColor,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(
-                            Icons.camera_alt,
-                            size: 16,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
+                if (state.isSuccess) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Profile setup complete (demo)'),
                     ),
-                  ),
-                ),
+                  );
+                }
 
-                const SizedBox(height: 32),
+                // Keep the DOB field in sync with state.
+                if (state.dob != null) {
+                  _dobController.text =
+                      '${state.dob!.month.toString().padLeft(2, '0')}/${state.dob!.day.toString().padLeft(2, '0')}/${state.dob!.year}';
+                }
+              },
+              builder: (context, state) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 36),
 
-                BlocConsumer<SignupBloc, SignupState>(
-                  listener: (context, state) {
-                    if (state.errorMessage != null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(state.errorMessage!)),
-                      );
-                    }
+                    Text(
+                      'Profile setup',
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
 
-                    if (state.isSuccess) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Profile setup complete (demo)'),
+                    const SizedBox(height: 8),
+
+                    Text(
+                      'Help us get to know you better by setting up your profile details.',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onBackground.withOpacity(0.7),
+                      ),
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    Center(
+                      child: GestureDetector(
+                        onTap: () => _pickImage(context),
+                        child: Stack(
+                          alignment: Alignment.bottomRight,
+                          children: [
+                            CircleAvatar(
+                              radius: 44,
+                              backgroundColor: theme.cardColor,
+                              backgroundImage: state.profileImagePath != null
+                                  ? FileImage(File(state.profileImagePath!))
+                                  : null,
+                              child: state.profileImagePath == null
+                                  ? Icon(
+                                      Icons.person,
+                                      size: 44,
+                                      color: theme.colorScheme.onBackground
+                                          .withOpacity(0.5),
+                                    )
+                                  : null,
+                            ),
+                            Container(
+                              width: 32,
+                              height: 32,
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.primary,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.camera_alt,
+                                size: 16,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
                         ),
-                      );
-                    }
+                      ),
+                    ),
 
-                    // Keep the DOB field in sync with state.
-                    if (state.dob != null) {
-                      _dobController.text =
-                          '${state.dob!.month.toString().padLeft(2, '0')}/${state.dob!.day.toString().padLeft(2, '0')}/${state.dob!.year}';
-                    }
-                  },
-                  builder: (context, state) {
-                    return Expanded(
+                    const SizedBox(height: 32),
+
+                    Expanded(
                       child: SingleChildScrollView(
                         physics: const BouncingScrollPhysics(),
                         child: Column(
@@ -187,10 +186,11 @@ class _SignupScreenState extends State<SignupScreen> {
                               hint: 'MM/DD/YYYY',
                               readOnly: true,
                               onTap: () => _pickDob(context, state.dob),
-                              suffixIcon: const Icon(
+                              suffixIcon: Icon(
                                 Icons.calendar_today_outlined,
                                 size: 20,
-                                color: kGraySubTitle,
+                                color: theme.colorScheme.onBackground
+                                    .withOpacity(0.7),
                               ),
                             ),
 
@@ -265,10 +265,10 @@ class _SignupScreenState extends State<SignupScreen> {
                           ],
                         ),
                       ),
-                    );
-                  },
-                ),
-              ],
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ),
@@ -296,9 +296,11 @@ class _SignupScreenState extends State<SignupScreen> {
     VoidCallback? onTap,
     bool readOnly = false,
   }) {
+    final theme = Theme.of(context);
+
     return Container(
       decoration: BoxDecoration(
-        color: kComponentBackground,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(

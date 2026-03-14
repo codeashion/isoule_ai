@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../models/memory_item.dart';
+import '../../../home_screen/presentation/models/memory_item.dart';
 import 'dashboard_event.dart';
 import 'dashboard_state.dart';
 

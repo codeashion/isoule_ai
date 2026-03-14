@@ -28,6 +28,12 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
       emit(state.copyWith(phone: event.phone, errorMessage: null));
     });
 
+    on<ProfileImageChanged>((event, emit) {
+      emit(
+        state.copyWith(profileImagePath: event.imagePath, errorMessage: null),
+      );
+    });
+
     on<SignupSubmitted>((event, emit) async {
       if (!state.isFormValid) {
         emit(

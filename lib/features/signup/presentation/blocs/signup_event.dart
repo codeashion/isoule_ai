@@ -44,10 +44,7 @@ class EmailChanged extends SignupEvent {
 class CountryChanged extends SignupEvent {
   final String countryCode;
 
-  CountryChanged({
-    required this.countryCode,
-   
-  });
+  CountryChanged({required this.countryCode});
 
   @override
   List<Object?> get props => [
@@ -63,6 +60,15 @@ class PhoneChanged extends SignupEvent {
 
   @override
   List<Object?> get props => [phone];
+}
+
+class ProfileImageChanged extends SignupEvent {
+  final String imagePath;
+
+  ProfileImageChanged(this.imagePath);
+
+  @override
+  List<Object?> get props => [imagePath];
 }
 
 class SignupSubmitted extends SignupEvent {}

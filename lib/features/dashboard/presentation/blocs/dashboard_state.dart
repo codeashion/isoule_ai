@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../models/memory_item.dart';
+import '../../../home_screen/presentation/models/memory_item.dart';
 
 class DashboardState extends Equatable {
   final List<MemoryItem> memories;
