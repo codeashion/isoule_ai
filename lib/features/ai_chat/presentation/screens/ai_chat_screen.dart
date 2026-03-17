@@ -19,102 +19,84 @@ class _AiChatScreenState extends State<AiChatScreen> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => AiChatBloc(),
-      child: Scaffold(
-        backgroundColor: kBackground,
-        appBar: AppBar(
-          backgroundColor: kBackground,
-          centerTitle: true,
-          title: const Text(
-            "AI Companion",
-            style: TextStyle(color: kTitleTextColor),
-          ),
-        ),
-        body: Column(
-          children: [
-            const SizedBox(height: 10),
-
-            /// Context Badge
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: kComponentBackground,
-                borderRadius: BorderRadius.circular(20),
+      child: Builder(
+        builder: (context) {
+          return Scaffold(
+            backgroundColor: kBackground,
+            appBar: AppBar(
+              backgroundColor: kBackground,
+              centerTitle: true,
+              title: const Text(
+                "AI Companion",
+                style: TextStyle(color: kTitleTextColor),
               ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.lock_outline, size: 16, color: kGraySubTitle),
-                  SizedBox(width: 6),
-                  Text(
-                    "Context aware: Accessing recent memories",
-                    style: TextStyle(fontSize: 12, color: kGraySubTitle),
+            ),
+            body: Column(
+              children: [
+                const SizedBox(height: 10),
+
+                /// Context Badge
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
                   ),
-                ],
-              ),
-            ),
+                  decoration: BoxDecoration(
+                    color: kComponentBackground,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.lock_outline, size: 16, color: kGraySubTitle),
+                      SizedBox(width: 6),
+                      Text(
+                        "Context aware: Accessing recent memories",
+                        style: TextStyle(fontSize: 12, color: kGraySubTitle),
+                      ),
+                    ],
+                  ),
+                ),
 
-            const SizedBox(height: 10),
+                const SizedBox(height: 10),
 
-            /// Chat List
-            Expanded(
-              child: BlocBuilder<AiChatBloc, AiChatState>(
-                builder: (context, state) {
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: state.messages.length + (state.isTyping ? 1 : 0),
-                    itemBuilder: (context, index) {
-                      if (index < state.messages.length) {
-                        final msg = state.messages[index];
-                        return ChatBubble(
-                          message: msg.message,
-                          isUser: msg.isUser,
-                        );
-                      } else {
-                        /// Typing Indicator
-                        return const Padding(
-                          padding: EdgeInsets.all(12),
-                          child: Text(
-                            "Typing...",
-                            style: TextStyle(color: kGraySubTitle),
-                          ),
-                        );
-                      }
+                /// Chat List
+                Expanded(
+                  child: BlocBuilder<AiChatBloc, AiChatState>(
+                    builder: (context, state) {
+                      return ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount:
+                            state.messages.length + (state.isTyping ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (index < state.messages.length) {
+                            final msg = state.messages[index];
+                            return ChatBubble(
+                              message: msg.message,
+                              isUser: msg.isUser,
+                            );
+                          } else {
+                            /// Typing Indicator
+                            return const Padding(
+                              padding: EdgeInsets.all(12),
+                              child: Text(
+                                "Typing...",
+                                style: TextStyle(color: kGraySubTitle),
+                              ),
+                            );
+                          }
+                        },
+                      );
                     },
-                  );
-                },
-              ),
-            ),
+                  ),
+                ),
 
-            /// Input
-            _buildInputField(context),
-          ],
-        ),
-
-        /// Bottom Navigation
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: 2,
-          selectedItemColor: kButtonColor,
-          unselectedItemColor: kGraySubTitle,
-          type: BottomNavigationBarType.fixed,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              label: "Home",
+                /// Input
+                _buildInputField(context),
+              ],
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.access_time),
-              label: "Timeline",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.chat_bubble_outline),
-              label: "AI Chat",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              label: "Profile",
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
