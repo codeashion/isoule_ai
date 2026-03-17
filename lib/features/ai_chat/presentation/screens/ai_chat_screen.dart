@@ -1,149 +1,165 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isoule_ai/core/constants/app_colors.dart';
+import 'package:isoule_ai/features/ai_chat/presentation/blocs/ai_chat_bloc.dart';
+import 'package:isoule_ai/features/ai_chat/presentation/blocs/ai_chat_event.dart';
+import 'package:isoule_ai/features/ai_chat/presentation/blocs/ai_chat_state.dart';
 
-class AiChatScreen extends StatelessWidget {
+class AiChatScreen extends StatefulWidget {
   const AiChatScreen({super.key});
+
+  @override
+  State<AiChatScreen> createState() => _AiChatScreenState();
+}
+
+class _AiChatScreenState extends State<AiChatScreen> {
+  final TextEditingController _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => _AiChatBloc(),
-      child: const _AiChatView(),
-    );
-  }
-}
-
-class _AiChatView extends StatelessWidget {
-  const _AiChatView();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'AI Chat',
-            style: Theme.of(
-              context,
-            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w700),
+      create: (_) => AiChatBloc(),
+      child: Scaffold(
+        backgroundColor: kBackground,
+        appBar: AppBar(
+          backgroundColor: kBackground,
+          centerTitle: true,
+          title: const Text(
+            "AI Companion",
+            style: TextStyle(color: kTitleTextColor),
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Ask the assistant anything about your memories.',
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: kGraySubTitle),
-          ),
-          const SizedBox(height: 18),
-          Expanded(
-            child: BlocBuilder<_AiChatBloc, _AiChatState>(
-              builder: (context, state) {
-                if (state.messages.isEmpty) {
-                  return Center(
-                    child: Text(
-                      'Start the conversation by sending a message.',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyMedium?.copyWith(color: kGraySubTitle),
-                      textAlign: TextAlign.center,
-                    ),
-                  );
-                }
+        ),
+        body: Column(
+          children: [
+            const SizedBox(height: 10),
 
-                return ListView.separated(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  itemCount: state.messages.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 10),
-                  itemBuilder: (context, index) {
-                    final message = state.messages[index];
-                    return Align(
-                      alignment: message.isUser
-                          ? Alignment.centerRight
-                          : Alignment.centerLeft,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: message.isUser
-                              ? kButtonColor
-                              : kComponentBackground,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Text(
-                          message.text,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: message.isUser
-                                    ? Colors.white
-                                    : kTitleTextColor,
-                              ),
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
+            /// Context Badge
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: kComponentBackground,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.lock_outline, size: 16, color: kGraySubTitle),
+                  SizedBox(width: 6),
+                  Text(
+                    "Context aware: Accessing recent memories",
+                    style: TextStyle(fontSize: 12, color: kGraySubTitle),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const _AiChatInput(),
-        ],
+
+            const SizedBox(height: 10),
+
+            /// Chat List
+            Expanded(
+              child: BlocBuilder<AiChatBloc, AiChatState>(
+                builder: (context, state) {
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: state.messages.length + (state.isTyping ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (index < state.messages.length) {
+                        final msg = state.messages[index];
+                        return ChatBubble(
+                          message: msg.message,
+                          isUser: msg.isUser,
+                        );
+                      } else {
+                        /// Typing Indicator
+                        return const Padding(
+                          padding: EdgeInsets.all(12),
+                          child: Text(
+                            "Typing...",
+                            style: TextStyle(color: kGraySubTitle),
+                          ),
+                        );
+                      }
+                    },
+                  );
+                },
+              ),
+            ),
+
+            /// Input
+            _buildInputField(context),
+          ],
+        ),
+
+        /// Bottom Navigation
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: 2,
+          selectedItemColor: kButtonColor,
+          unselectedItemColor: kGraySubTitle,
+          type: BottomNavigationBarType.fixed,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              label: "Home",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.access_time),
+              label: "Timeline",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat_bubble_outline),
+              label: "AI Chat",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              label: "Profile",
+            ),
+          ],
+        ),
       ),
     );
   }
-}
 
-class _AiChatInput extends StatefulWidget {
-  const _AiChatInput();
-
-  @override
-  State<_AiChatInput> createState() => _AiChatInputState();
-}
-
-class _AiChatInputState extends State<_AiChatInput> {
-  final _controller = TextEditingController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _send() {
-    final text = _controller.text.trim();
-    if (text.isEmpty) return;
-    context.read<_AiChatBloc>().add(_AiChatMessageSent(text));
-    _controller.clear();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildInputField(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: kComponentBackground,
-        borderRadius: BorderRadius.circular(16),
-      ),
       child: Row(
         children: [
           Expanded(
-            child: TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                hintText: 'Ask something...',
-                border: InputBorder.none,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              decoration: BoxDecoration(
+                color: kComponentBackground,
+                borderRadius: BorderRadius.circular(20),
               ),
-              onSubmitted: (_) => _send(),
+              child: TextField(
+                controller: _controller,
+                decoration: const InputDecoration(
+                  hintText: "Type a message...",
+                  border: InputBorder.none,
+                ),
+              ),
             ),
           ),
-          IconButton(
-            onPressed: _send,
-            icon: const Icon(Icons.send),
-            color: kButtonColor,
+          const SizedBox(width: 10),
+          GestureDetector(
+            onTap: () {
+              if (_controller.text.trim().isEmpty) return;
+
+              context.read<AiChatBloc>().add(
+                SendMessageEvent(_controller.text.trim()),
+              );
+
+              _controller.clear();
+            },
+            child: Container(
+              height: 48,
+              width: 48,
+              decoration: const BoxDecoration(
+                color: kButtonColor,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.arrow_upward, color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -151,43 +167,30 @@ class _AiChatInputState extends State<_AiChatInput> {
   }
 }
 
-class _AiChatMessage {
-  final String text;
+/// Chat Bubble
+class ChatBubble extends StatelessWidget {
+  final String message;
   final bool isUser;
 
-  _AiChatMessage({required this.text, required this.isUser});
-}
+  const ChatBubble({super.key, required this.message, required this.isUser});
 
-class _AiChatState {
-  final List<_AiChatMessage> messages;
-
-  const _AiChatState({required this.messages});
-
-  _AiChatState copyWith({List<_AiChatMessage>? messages}) {
-    return _AiChatState(messages: messages ?? this.messages);
-  }
-}
-
-abstract class _AiChatEvent {}
-
-class _AiChatMessageSent extends _AiChatEvent {
-  final String text;
-
-  _AiChatMessageSent(this.text);
-}
-
-class _AiChatBloc extends Bloc<_AiChatEvent, _AiChatState> {
-  _AiChatBloc() : super(const _AiChatState(messages: [])) {
-    on<_AiChatMessageSent>((event, emit) {
-      final updated = List<_AiChatMessage>.from(state.messages)
-        ..add(_AiChatMessage(text: event.text, isUser: true))
-        ..add(
-          _AiChatMessage(
-            text: 'This is a placeholder response.',
-            isUser: false,
-          ),
-        );
-      emit(state.copyWith(messages: updated));
-    });
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 6),
+        padding: const EdgeInsets.all(14),
+        constraints: const BoxConstraints(maxWidth: 260),
+        decoration: BoxDecoration(
+          color: isUser ? kButtonColor : kComponentBackground,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(
+          message,
+          style: TextStyle(color: isUser ? Colors.white : kTitleTextColor),
+        ),
+      ),
+    );
   }
 }
