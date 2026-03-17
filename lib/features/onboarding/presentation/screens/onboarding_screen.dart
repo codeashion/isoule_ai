@@ -249,30 +249,30 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
 
                   /// Indicator
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      onboardingList.length,
-                      (index) => AnimatedContainer(
-                        duration: const Duration(milliseconds: 250),
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        width: state.currentPage == index ? 20 : 6,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: state.currentPage == index
-                              ? kButtonColor
-                              : kComponentBackground,
-                          borderRadius: BorderRadius.circular(10),
+                  Container(
+                    margin: EdgeInsets.only(top: 13),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        onboardingList.length,
+                        (index) => AnimatedContainer(
+                          duration: const Duration(milliseconds: 250),
+                          margin: const EdgeInsets.symmetric(horizontal: 4,),
+                          width: state.currentPage == index ? 20 : 6,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: state.currentPage == index
+                                ? kButtonColor
+                                : kComponentBackground,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
                       ),
                     ),
                   ),
-
-                  const SizedBox(height: 20),
-
                   /// Bottom Button
                   Padding(
-                    padding: const EdgeInsets.all(24),
+                    padding:EdgeInsets.only(top: 24, left: 24, right: 24),
                     child: SizedBox(
                       width: double.infinity,
                       height: 50,
