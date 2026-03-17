@@ -16,7 +16,7 @@ class OnboardingData {
 
 final onboardingList = [
   OnboardingData(
-    image: "assets/images/onboarding1_clean.svg",
+    image: "assets/images/onboarding1.svg",
     tag: "END-TO-END ENCRYPTED",
     title: "Secure Memory Vault",
     description:
@@ -27,7 +27,7 @@ final onboardingList = [
     ],
   ),
   OnboardingData(
-    image: "assets/images/onboarding2_clean.svg",
+    image: "assets/images/onboarding2.svg",
     tag: "PERSONAL AI INSIGHTS",
     title: "Deep Reflection",
     description:
@@ -38,7 +38,7 @@ final onboardingList = [
     ],
   ),
   OnboardingData(
-    image: "assets/images/onboarding3_clean.svg",
+    image: "assets/images/onboarding3.svg",
     tag: "SECURE BY DESIGN",
     title: "Secure by Design",
     description: "Your digital sanctuary is built on three pillars of privacy.",
